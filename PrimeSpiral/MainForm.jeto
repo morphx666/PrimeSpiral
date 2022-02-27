@@ -1,0 +1,17 @@
+﻿{
+	"$type": "Form",
+	"Title": "Prime Spiral",
+	"ClientSize": "800, 600",
+	"Padding": "10",
+	"Content": {
+		"$type": "DynamicLayout",
+		"Rows": [
+			{
+				"$type": "Drawable",
+				"$name": "Canvas",
+				"CanFocus": "true",
+				"BackgroundColor": "Black"
+			}
+		]
+	}
+}
