@@ -6,7 +6,7 @@
 	"Content": {
 		"$type": "DynamicLayout",
 		"Rows": [
-			{
+			{	
 				"$type": "Drawable",
 				"$name": "Canvas",
 				"CanFocus": "true",

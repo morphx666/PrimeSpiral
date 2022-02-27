@@ -91,21 +91,35 @@ namespace PrimeSpiral {
 		public MainForm() {
 			JsonReader.Load(this);
 
+            this.SizeChanged += (sender, e) => {
+                Canvas.Width = this.Width;
+                Canvas.Height = this.Height;
+
+                lock(points) {
+                    points.Clear();
+                    primes.Clear();
+                    index = 1;
+                    
+                    spiral = new Spiral(step, 
+                        Canvas.Width / 2, 1, 
+                        Canvas.Height / 2, 1, 
+                        Spiral.Directions.Right);
+
+                    AddPoint();
+                }
+            };
+
             Canvas.Paint += (object s, PaintEventArgs e) => DrawSpiral(e);
+
+            this.Maximize();
 
             this.Shown += (_, __) => {
                 step2 = step / 2;
                 step4 = step2 / 2;
-                spiral = new Spiral(step, 
-                    Canvas.Width / 2, 1, 
-                    Canvas.Height / 2, 1, 
-                    Spiral.Directions.Right);
-
-                    AddPoint();
 
                 Task.Run(() => {
                     while(true) {
-                        if(!(spiral.X < 0 || spiral.X > Canvas.Width || spiral.Y < 0 || spiral.Y > Canvas.Height)) {
+                        if(!((spiral.X < 0 || spiral.X > Canvas.Width) && (spiral.Y < 0 || spiral.Y > Canvas.Height))) {
                             AddPoint();
                         }
                     }
