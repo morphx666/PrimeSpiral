@@ -1,6 +1,7 @@
 ﻿{
 	"$type": "Form",
 	"Title": "Prime Spiral",
+	"BackgroundColor": "#333333",
 	"ClientSize": "800, 600",
 	"Padding": "10",
 	"Content": {

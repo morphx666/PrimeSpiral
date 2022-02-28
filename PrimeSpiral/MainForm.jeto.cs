@@ -17,7 +17,7 @@ namespace PrimeSpiral {
                 Right,
                 Up,
                 Left,
-                Down
+                Down,
             }
 
             public int X { get; private set;}
@@ -83,10 +83,16 @@ namespace PrimeSpiral {
         Spiral spiral;
         List<PointF> points = new List<PointF>();
         UInt64 index = 1;
-        List<PointF> primes = new List<PointF>();
-        int step = 10;
+        List<(ulong, RectangleF)> primes = new List<(ulong, RectangleF)>();
+        int step = 20;
         int step2;
         int step4;
+
+        Spiral.Directions lastDirection;
+        
+        (ulong Prime, RectangleF Bounds)? primeInfo = null;
+
+        Font font = new Font(FontFamilies.Monospace, 12);
 
 		public MainForm() {
 			JsonReader.Load(this);
@@ -99,6 +105,8 @@ namespace PrimeSpiral {
                     points.Clear();
                     primes.Clear();
                     index = 1;
+
+                    lastDirection = Spiral.Directions.Right;
                     
                     spiral = new Spiral(step, 
                         Canvas.Width / 2, 1, 
@@ -108,6 +116,8 @@ namespace PrimeSpiral {
                     AddPoint();
                 }
             };
+
+            this.MouseMove +=  HandleMouseMove;
 
             Canvas.Paint += (object s, PaintEventArgs e) => DrawSpiral(e);
 
@@ -134,21 +144,50 @@ namespace PrimeSpiral {
             };
 		}
 
+        private void HandleMouseMove(object o, MouseEventArgs e) {
+            PointF mp = e.Location;
+            mp.Offset(-step2, -step2);
+
+            foreach((ulong Prime, RectangleF Bounds) p in primes) {
+                if(p.Bounds.Contains(mp)) {
+                    primeInfo = p;
+                    return;
+                }
+            }
+            primeInfo = null;
+        }
+
         void DrawSpiral(PaintEventArgs e) {
+
             Graphics g = e.Graphics;
 
             lock(points) {
-                g.DrawLines(Colors.White, points);
+                g.DrawLines(Colors.DimGray, points);
 
-                foreach(PointF p in primes) {
-                    g.FillEllipse(Colors.White, p.X - step4, p.Y - step4, step2, step2);
+                foreach((ulong, RectangleF Bounds) p in primes) {
+                    g.FillEllipse(Colors.White, p.Bounds);
                 }
+            }
+
+            if(primeInfo.HasValue) {
+                string info = $" {primeInfo.Value.Prime} ";
+                SizeF s = g.MeasureString(font, info);
+                PointF p = primeInfo.Value.Bounds.Location;
+                p.Offset(step, 0);
+                RectangleF b = new RectangleF(p, s);
+                g.FillRectangle(Colors.Black, b);
+                g.DrawRectangle(Colors.Gray, b);
+                g.DrawText(font, 
+                    Brushes.White, 
+                    p,
+                    info);
             }
         }
 
         void AddPoint() {
             lock(points) {
-                if(IsPrime(index++)) primes.Add(spiral.Location);
+                if(IsPrime(index)) primes.Add((index, new RectangleF(spiral.Location.X - step4, spiral.Location.Y - step4, step2, step2)));
+                index++;
                 points.Add(spiral.Location);
                 spiral.Next();
             }
