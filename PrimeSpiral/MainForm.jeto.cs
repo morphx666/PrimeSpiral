@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Threading;
 
 namespace PrimeSpiral {
-	public class MainForm : Form {
+    public class MainForm : Form {
         protected Drawable Canvas;
 
         private struct Spiral {
@@ -18,10 +18,10 @@ namespace PrimeSpiral {
                 Down,
             }
 
-            public float X { get; private set;}
+            public float X { get; private set; }
             private int Xc;
             private int Xn;
-            public float Y { get; private set;}
+            public float Y { get; private set; }
             private int Yc;
             private int Yn;
             private Directions Direction;
@@ -72,7 +72,7 @@ namespace PrimeSpiral {
                 d = (d + 1) % 4;
                 Direction = (Directions)d;
             }
-        
+
             public PointF Location {
                 get => new PointF(X, Y);
             }
@@ -85,12 +85,12 @@ namespace PrimeSpiral {
         float step = 20;
         float step2;
         float step4;
-        
+
         (ulong Prime, RectangleF Bounds)? primeInfo = null;
         readonly Font font = new Font(FontFamilies.Monospace, 12);
 
-		public MainForm() {
-			JsonReader.Load(this);
+        public MainForm() {
+            JsonReader.Load(this);
 
             this.SizeChanged += (sender, e) => {
                 Canvas.Width = this.Width;
@@ -100,17 +100,17 @@ namespace PrimeSpiral {
                     points.Clear();
                     primes.Clear();
                     index = 1;
-                    
-                    spiral = new Spiral(step, 
-                        Canvas.Width / 2, 1, 
-                        Canvas.Height / 2, 1, 
+
+                    spiral = new Spiral(step,
+                        Canvas.Width / 2, 1,
+                        Canvas.Height / 2, 1,
                         Spiral.Directions.Right);
 
                     AddPoint();
                 }
             };
 
-            this.MouseMove +=  HandleMouseMove;
+            this.MouseMove += HandleMouseMove;
 
             Canvas.Paint += (object s, PaintEventArgs e) => DrawSpiral(e);
 
@@ -122,8 +122,8 @@ namespace PrimeSpiral {
 
                 Task.Run(() => {
                     while(true) {
-                        if(!((spiral.X < 0 || spiral.X > Canvas.Width) && 
-                             (spiral.Y < 0 || spiral.Y > Canvas.Height))) {
+                        if(!((spiral.X < 0 || spiral.X > Canvas.Width) &&
+                                 (spiral.Y < 0 || spiral.Y > Canvas.Height))) {
                             AddPoint();
                         }
                     }
@@ -136,7 +136,7 @@ namespace PrimeSpiral {
                     }
                 });
             };
-		}
+        }
 
         private void HandleMouseMove(object o, MouseEventArgs e) {
             PointF mp = e.Location;

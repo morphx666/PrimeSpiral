@@ -3,8 +3,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <AssemblyVersion>2023.2.9.4</AssemblyVersion>
-    <FileVersion>2023.2.9.4</FileVersion>
+    <AssemblyVersion>2023.2.9.9</AssemblyVersion>
+    <FileVersion>2023.2.9.9</FileVersion>
+    <BaseOutputPath>..\Release</BaseOutputPath>
   </PropertyGroup>
 	
   <ItemGroup>
