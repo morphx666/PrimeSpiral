@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>2023.2.9.8</AssemblyVersion>
-    <FileVersion>2023.2.9.8</FileVersion>
+    <AssemblyVersion>2023.2.9.12</AssemblyVersion>
+    <FileVersion>2023.2.9.12</FileVersion>
     <BaseOutputPath>..\Release</BaseOutputPath>
   </PropertyGroup>
 

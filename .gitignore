@@ -1,6 +1,6 @@
 /bin
 **/obj
+/.vs
+/Release
 .fake
 .ionide
-**/.vs/
-/Release

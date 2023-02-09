@@ -79,7 +79,7 @@ namespace PrimeSpiral {
         }
 
         Spiral spiral;
-        List<PointF> points = new List<PointF>();
+        readonly List<PointF> points = new List<PointF>();
         UInt64 index = 1;
         List<(ulong Prime, RectangleF Bounds)> primes = new List<(ulong, RectangleF)>();
         float step = 20;
@@ -123,7 +123,7 @@ namespace PrimeSpiral {
                 Task.Run(() => {
                     while(true) {
                         if(!((spiral.X < 0 || spiral.X > Canvas.Width) &&
-                                 (spiral.Y < 0 || spiral.Y > Canvas.Height))) {
+                             (spiral.Y < 0 || spiral.Y > Canvas.Height))) {
                             AddPoint();
                         }
                     }
