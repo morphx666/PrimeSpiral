@@ -5,14 +5,12 @@ using Eto.Drawing;
 using Eto.Serialization.Json;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Diagnostics;
-using System.Linq;
 
 namespace PrimeSpiral {
 	public class MainForm : Form {
         protected Drawable Canvas;
 
-        struct Spiral {
+        private struct Spiral {
             public enum Directions {
                 Right,
                 Up,
@@ -20,16 +18,16 @@ namespace PrimeSpiral {
                 Down,
             }
 
-            public int X { get; private set;}
+            public float X { get; private set;}
             private int Xc;
             private int Xn;
-            public int Y { get; private set;}
+            public float Y { get; private set;}
             private int Yc;
             private int Yn;
             private Directions Direction;
-            public int Step { get; }
+            public float Step { get; }
 
-            public Spiral(int step, int x, int xn, int y, int yn, Directions d) {
+            public Spiral(float step, float x, int xn, float y, int yn, Directions d) {
                 X = x;
                 Xc = 0;
                 Xn = xn;
@@ -75,24 +73,21 @@ namespace PrimeSpiral {
                 Direction = (Directions)d;
             }
         
-            public Point Location {
-                get => new Point(X, Y);
+            public PointF Location {
+                get => new PointF(X, Y);
             }
         }
 
         Spiral spiral;
         List<PointF> points = new List<PointF>();
         UInt64 index = 1;
-        List<(ulong, RectangleF)> primes = new List<(ulong, RectangleF)>();
-        int step = 20;
-        int step2;
-        int step4;
-
-        Spiral.Directions lastDirection;
+        List<(ulong Prime, RectangleF Bounds)> primes = new List<(ulong, RectangleF)>();
+        float step = 20;
+        float step2;
+        float step4;
         
         (ulong Prime, RectangleF Bounds)? primeInfo = null;
-
-        Font font = new Font(FontFamilies.Monospace, 12);
+        readonly Font font = new Font(FontFamilies.Monospace, 12);
 
 		public MainForm() {
 			JsonReader.Load(this);
@@ -105,8 +100,6 @@ namespace PrimeSpiral {
                     points.Clear();
                     primes.Clear();
                     index = 1;
-
-                    lastDirection = Spiral.Directions.Right;
                     
                     spiral = new Spiral(step, 
                         Canvas.Width / 2, 1, 
@@ -129,7 +122,8 @@ namespace PrimeSpiral {
 
                 Task.Run(() => {
                     while(true) {
-                        if(!((spiral.X < 0 || spiral.X > Canvas.Width) && (spiral.Y < 0 || spiral.Y > Canvas.Height))) {
+                        if(!((spiral.X < 0 || spiral.X > Canvas.Width) && 
+                             (spiral.Y < 0 || spiral.Y > Canvas.Height))) {
                             AddPoint();
                         }
                     }
@@ -148,17 +142,18 @@ namespace PrimeSpiral {
             PointF mp = e.Location;
             mp.Offset(-step2, -step2);
 
-            foreach((ulong Prime, RectangleF Bounds) p in primes) {
-                if(p.Bounds.Contains(mp)) {
-                    primeInfo = p;
-                    return;
+            lock(points) {
+                foreach((ulong Prime, RectangleF Bounds) p in primes) {
+                    if(IsInsideCircle(mp.X, mp.Y, p.Bounds)) {
+                        primeInfo = p;
+                        return;
+                    }
                 }
             }
             primeInfo = null;
         }
 
         void DrawSpiral(PaintEventArgs e) {
-
             Graphics g = e.Graphics;
 
             lock(points) {
@@ -170,17 +165,19 @@ namespace PrimeSpiral {
             }
 
             if(primeInfo.HasValue) {
-                string info = $" {primeInfo.Value.Prime} ";
+                string info = $"{primeInfo.Value.Prime}";
                 SizeF s = g.MeasureString(font, info);
+
                 PointF p = primeInfo.Value.Bounds.Location;
-                p.Offset(step, 0);
+                p.Offset(step2 + 20, step4 - s.Height / 2);
+
                 RectangleF b = new RectangleF(p, s);
+                b.Inflate(s.Height / 2, s.Height / 2);
+
+                g.DrawEllipse(Colors.Red, primeInfo.Value.Bounds);
                 g.FillRectangle(Colors.Black, b);
                 g.DrawRectangle(Colors.Gray, b);
-                g.DrawText(font, 
-                    Brushes.White, 
-                    p,
-                    info);
+                g.DrawText(font, Brushes.White, p, info);
             }
         }
 
@@ -197,6 +194,14 @@ namespace PrimeSpiral {
             UInt64 k = n;
             while(--k > 1) if(n % k == 0) return false;
             return n > 1;
+        }
+
+        bool IsInsideCircle(float x, float y, RectangleF r) {
+            x -= r.X + r.Width / 2;
+            y -= r.Y + r.Height / 2;
+            float rd = r.Width / 2;
+            float rd2 = rd * rd;
+            return (x * x) / rd2 + (y * y) / rd2 <= 1.0;
         }
     }
 }

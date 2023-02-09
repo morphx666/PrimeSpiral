@@ -3,14 +3,20 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <AssemblyVersion>2023.2.9.4</AssemblyVersion>
+    <FileVersion>2023.2.9.4</FileVersion>
   </PropertyGroup>
+	
+  <ItemGroup>
+    <None Remove=".gitignore" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PrimeSpiral\PrimeSpiral.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Gtk" Version="2.6.1" />
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.7.3" />
   </ItemGroup>
 	
 </Project>
